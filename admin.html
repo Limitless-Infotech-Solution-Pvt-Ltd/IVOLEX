@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IVOLEX - Secure Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --sidebar-width: 250px;
+            --header-height: 70px;
+            --security-red: #e63946;
+            --security-green: #2a9d8f;
+            --background-dark: #0d1117;
+            --card-dark: #161b22;
+            --border-dark: #30363d;
+            --text-light: #c9d1d9;
+            --text-muted: #8b949e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .admin-sidebar {
+            width: var(--sidebar-width);
+            background: var(--card-dark);
+            color: var(--text-light);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.5);
+            border-right: 1px solid var(--border-dark);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-dark);
+            display: flex;
+            align-items: center;
+            background: rgba(13, 17, 23, 0.9);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            margin-left: 10px;
+            font-weight: 600;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-header i {
+            font-size: 1.8rem;
+            color: var(--success);
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 1rem;
+            border-left: 3px solid transparent;
+            position: relative;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background: rgba(33, 38, 45, 0.6);
+            color: var(--text-light);
+            border-left: 3px solid var(--success);
+        }
+
+        .menu-item i {
+            margin-right: 12px;
+            width: 24px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .menu-item.active i {
+            color: var(--success);
+        }
+
+        .menu-badge {
+            position: absolute;
+            right: 20px;
+            background: var(--danger);
+            color: white;
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .admin-main {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: all 0.3s ease;
+        }
+
+        /* Header Styles */
+        .admin-header {
+            background: var(--card-dark);
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-dark);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-sidebar {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            cursor: pointer;
+            margin-right: 20px;
+            display: none;
+        }
+
+        .search-box {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border-radius: 6px;
+            border: 1px solid var(--border-dark);
+            background: var(--background-dark);
+            color: var(--text-light);
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-icon {
+            position: relative;
+            margin-left: 20px;
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .header-icon:hover {
+            color: var(--success);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .security-status {
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: rgba(42, 157, 143, 0.15);
+            color: var(--security-green);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .security-status i {
+            margin-right: 5px;
+        }
+
+        .security-status.low {
+            background: rgba(230, 57, 70, 0.15);
+            color: var(--security-red);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            margin-left: 25px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--success));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+            border: 2px solid var(--border-dark);
+        }
+
+        .user-info {
+            line-height: 1.3;
+        }
+
+        .user-info .name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .user-info .role {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Content Area */
+        .admin-content {
+            padding: 30px;
+        }
+
+        .content-header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-dark);
+            padding-bottom: 15px;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-actions button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .page-actions button i {
+            margin-right: 8px;
+        }
+
+        .page-actions button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Dashboard */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--card-dark), var(--background-dark));
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border-dark);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .stat-card:nth-child(1)::before { background: var(--primary); }
+        .stat-card:nth-child(2)::before { background: var(--success); }
+        .stat-card:nth-child(3)::before { background: var(--danger); }
+        .stat-card:nth-child(4)::before { background: var(--warning); }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-right: 15px;
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        .stat-card:nth-child(2) .stat-icon {
+            background: rgba(76, 201, 240, 0.1);
+            color: var(--success);
+        }
+
+        .stat-card:nth-child(3) .stat-icon {
+            background: rgba(247, 37, 133, 0.1);
+            color: var(--danger);
+        }
+
+        .stat-card:nth-child(4) .stat-icon {
+            background: rgba(248, 150, 30, 0.1);
+            color: var(--warning);
+        }
+
+        .stat-info {
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            background: linear-gradient(90deg, var(--text-light), #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-title {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: linear-gradient(135deg, var(--card-dark), var(--background-dark));
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-dark);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .chart-actions select {
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid var(--border-dark);
+            background: var(--background-dark);
+            color: var(--text-light);
+            outline: none;
+        }
+
+        .chart-canvas {
+            height: 300px;
+            position: relative;
+        }
+
+        /* Tables */
+        .table-container {
+            background: linear-gradient(135deg, var(--card-dark), var(--background-dark));
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-dark);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 15px;
+            background: rgba(33, 38, 45, 0.6);
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--border-dark);
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-dark);
+            color: var(--text-light);
+        }
+
+        tr:hover {
+            background-color: rgba(33, 38, 45, 0.3);
+        }
+
+        .status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-pending {
+            background: rgba(255, 243, 205, 0.1);
+            color: #ffd43b;
+            border: 1px solid rgba(255, 243, 205, 0.3);
+        }
+
+        .status-completed {
+            background: rgba(40, 167, 69, 0.1);
+            color: #3fb950;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .status-processing {
+            background: rgba(0, 92, 197, 0.1);
+            color: #58a6ff;
+            border: 1px solid rgba(0, 92, 197, 0.3);
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-right: 5px;
+            transition: all 0.2s;
+        }
+
+        .view-btn {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(67, 97, 238, 0.3);
+        }
+
+        .view-btn:hover {
+            background: rgba(67, 97, 238, 0.2);
+        }
+
+        .edit-btn {
+            background: rgba(248, 150, 30, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(248, 150, 30, 0.3);
+        }
+
+        .edit-btn:hover {
+            background: rgba(248, 150, 30, 0.2);
+        }
+
+        .delete-btn {
+            background: rgba(247, 37, 133, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(247, 37, 133, 0.3);
+        }
+
+        .delete-btn:hover {
+            background: rgba(247, 37, 133, 0.2);
+        }
+
+        /* Security Section */
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .security-card {
+            background: linear-gradient(135deg, var(--card-dark), var(--background-dark));
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-dark);
+        }
+
+        .security-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-dark);
+        }
+
+        .security-header i {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .security-card:nth-child(1) .security-header i { color: var(--security-green); }
+        .security-card:nth-child(2) .security-header i { color: var(--warning); }
+        .security-card:nth-child(3) .security-header i { color: var(--danger); }
+
+        .security-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .security-status-indicator {
+            margin-left: auto;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--security-green);
+        }
+
+        .security-card:nth-child(3) .security-status-indicator {
+            background: var(--security-red);
+        }
+
+        .security-list {
+            list-style: none;
+        }
+
+        .security-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .security-list li:last-child {
+            border-bottom: none;
+        }
+
+        .security-list i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .security-list .secure i { color: var(--security-green); }
+        .security-list .warning i { color: var(--warning); }
+        .security-list .danger i { color: var(--security-red); }
+
+        /* Activity Log */
+        .activity-log {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-dark);
+            display: flex;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(67, 97, 238, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .activity-details {
+            flex: 1;
+        }
+
+        .activity-message {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Login Screen */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--dark), #0d1117);
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--card-dark);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+            border: 1px solid var(--border-dark);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, transparent 0%, rgba(67, 97, 238, 0.1) 70%);
+            z-index: 0;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-logo {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .login-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .login-form {
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-dark);
+            background: var(--background-dark);
+            color: var(--text-light);
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        .security-tips {
+            margin-top: 25px;
+            padding: 15px;
+            background: rgba(42, 157, 143, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(42, 157, 143, 0.3);
+        }
+
+        .security-tips h3 {
+            margin-bottom: 10px;
+            color: var(--security-green);
+            display: flex;
+            align-items: center;
+        }
+
+        .security-tips h3 i {
+            margin-right: 10px;
+        }
+
+        .security-tips ul {
+            padding-left: 20px;
+        }
+
+        .security-tips li {
+            margin-bottom: 8px;
+            color: var(--text-light);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .admin-sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .admin-main {
+                margin-left: 0;
+            }
+            
+            .toggle-sidebar {
+                display: block;
+            }
+            
+            .search-box {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-container,
+            .security-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-box {
+                display: none;
+            }
+            
+            .security-status {
+                display: none;
+            }
+            
+            .admin-content {
+                padding: 20px;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--background-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-dark);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div id="login-screen" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h1 class="login-title">IVOLEX Admin Portal</h1>
+                <p class="login-subtitle">Secure Access to Management Dashboard</p>
+            </div>
+            
+            <div class="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" class="form-control" placeholder="Enter admin username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="password-container">
+                        <input type="password" id="password" class="form-control" placeholder="Enter your password">
+                        <i class="fas fa-eye password-toggle" id="toggle-password"></i>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="auth-code">Two-Factor Code</label>
+                    <input type="text" id="auth-code" class="form-control" placeholder="Enter 6-digit code">
+                </div>
+                
+                <button class="btn-login" id="login-btn">Secure Login</button>
+                
+                <div class="security-tips">
+                    <h3><i class="fas fa-shield-alt"></i> Security Best Practices</h3>
+                    <ul>
+                        <li>Never share your credentials with anyone</li>
+                        <li>Use a password manager for strong passwords</li>
+                        <li>Enable biometric authentication where available</li>
+                        <li>Regularly review admin access permissions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="admin-panel" class="admin-container" style="display:none">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-shield-alt"></i>
+                <h2>IVOLEX Admin</h2>
+            </div>
+            <div class="sidebar-menu">
+                <a href="#" class="menu-item active">
+                    <i class="fas fa-chart-line"></i>
+                    Dashboard
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-box"></i>
+                    Products
+                    <span class="menu-badge">24</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    Orders
+                    <span class="menu-badge">8</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    Customers
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-paint-brush"></i>
+                    Design Services
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-chart-bar"></i>
+                    Analytics
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </a>
+                <div class="menu-item" style="margin-top: 20px; color: var(--success);">
+                    <i class="fas fa-shield-alt"></i>
+                    Security Center
+                </div>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-user-shield"></i>
+                    Admin Users
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-history"></i>
+                    Audit Logs
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-lock"></i>
+                    Access Control
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-file-invoice"></i>
+                    Security Reports
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main">
+            <!-- Header -->
+            <div class="admin-header">
+                <div class="header-left">
+                    <div class="toggle-sidebar">
+                        <i class="fas fa-bars"></i>
+                    </div>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search...">
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="security-status">
+                        <i class="fas fa-shield-alt"></i>
+                        Security: Active
+                    </div>
+                    <div class="header-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">5</span>
+                    </div>
+                    <div class="header-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="user-profile" id="logout-btn">
+                        <div class="user-avatar">AD</div>
+                        <div class="user-info">
+                            <div class="name">Admin User</div>
+                            <div class="role">Security Level: Admin</div>
+                        </div>
+                        <i class="fas fa-chevron-down" style="margin-left: 10px;"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="admin-content">
+                <div class="content-header">
+                    <h1 class="page-title">Admin Dashboard</h1>
+                    <div class="page-actions">
+                        <button><i class="fas fa-plus"></i> New Product</button>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number">1,248</div>
+                            <div class="stat-title">Total Orders</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number">$86,570</div>
+                            <div class="stat-title">Total Revenue</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number">3,458</div>
+                            <div class="stat-title">Customers</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-number">2,156</div>
+                            <div class="stat-title">Products</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Section -->
+                <div class="content-header">
+                    <h1 class="page-title">Security Center</h1>
+                </div>
+
+                <div class="security-grid">
+                    <div class="security-card">
+                        <div class="security-header">
+                            <i class="fas fa-shield-alt"></i>
+                            <div class="security-title">System Security</div>
+                            <div class="security-status-indicator"></div>
+                        </div>
+                        <ul class="security-list">
+                            <li>
+                                <i class="fas fa-check-circle secure"></i>
+                                <span>Firewall: Active</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle secure"></i>
+                                <span>Encryption: Enabled</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle secure"></i>
+                                <span>Intrusion Detection: Active</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle secure"></i>
+                                <span>2FA: Enabled for all admins</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="security-card">
+                        <div class="security-header">
+                            <i class="fas fa-exclamation-triangle warning"></i>
+                            <div class="security-title">Security Alerts</div>
+                        </div>
+                        <ul class="security-list">
+                            <li>
+                                <i class="fas fa-exclamation-circle warning"></i>
+                                <span>5 failed login attempts</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-user-clock warning"></i>
+                                <span>3 inactive admin accounts</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-sync-alt warning"></i>
+                                <span>Password rotation due</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="security-card">
+                        <div class="security-header">
+                            <i class="fas fa-lock danger"></i>
+                            <div class="security-title">Access Control</div>
+                            <div class="security-status-indicator"></div>
+                        </div>
+                        <ul class="security-list">
+                            <li>
+                                <i class="fas fa-user-shield secure"></i>
+                                <span>Admin users: 4</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-user-cog secure"></i>
+                                <span>Editor users: 8</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-exclamation-circle danger"></i>
+                                <span>2 accounts with excessive permissions</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="chart-grid">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title">Security Events</div>
+                            <div class="chart-actions">
+                                <select>
+                                    <option>Last 7 Days</option>
+                                    <option selected>Last 30 Days</option>
+                                    <option>Last 90 Days</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-canvas">
+                            <canvas id="securityChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title">Recent Activity</div>
+                        </div>
+                        <div class="activity-log">
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <div class="activity-message">Admin User logged in from new device</div>
+                                    <div class="activity-time">2 minutes ago • Security alert</div>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <div class="activity-message">Product "Luxury Sofa" was updated</div>
+                                    <div class="activity-time">15 minutes ago • Inventory</div>
+                                </div>
+            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <div class="activity-message">New order #IVX-9876 placed</div>
+                                    <div class="activity-time">45 minutes ago • Sales</div>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <div class="activity-message">New admin account created</div>
+                                    <div class="activity-time">1 hour ago • Security</div>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <div class="activity-message">Failed login attempt from unauthorized IP</div>
+                                    <div class="activity-time">3 hours ago • Security alert</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="content-header">
+                    <h1 class="page-title">Recent Orders</h1>
+                    <div class="page-actions">
+                        <button><i class="fas fa-download"></i> Export</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#IVX-7842</td>
+                                <td>John Anderson</td>
+                                <td>Jun 12, 2023</td>
+                                <td>$1,245.00</td>
+                                <td><span class="status status-completed">Completed</span></td>
+                                <td>
+                                    <button class="action-btn view-btn"><i class="fas fa-eye"></i> View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#IVX-6521</td>
+                                <td>Sarah Johnson</td>
+                                <td>Jun 11, 2023</td>
+                                <td>$845.50</td>
+                                <td><span class="status status-processing">Processing</span></td>
+                                <td>
+                                    <button class="action-btn view-btn"><i class="fas fa-eye"></i> View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#IVX-5214</td>
+                                <td>Michael Brown</td>
+                                <td>Jun 10, 2023</td>
+                                <td>$2,450.00</td>
+                                <td><span class="status status-pending">Pending</span></td>
+                                <td>
+                                    <button class="action-btn view-btn"><i class="fas fa-eye"></i> View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#IVX-3987</td>
+                                <td>Emily Davis</td>
+                                <td>Jun 9, 2023</td>
+                                <td>$1,780.00</td>
+                                <td><span class="status status-completed">Completed</span></td>
+                                <td>
+                                    <button class="action-btn view-btn"><i class="fas fa-eye"></i> View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#IVX-2876</td>
+                                <td>Robert Wilson</td>
+                                <td>Jun 8, 2023</td>
+                                <td>$3,120.00</td>
+                                <td><span class="status status-processing">Processing</span></td>
+                                <td>
+                                    <button class="action-btn view-btn"><i class="fas fa-eye"></i> View</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const loginScreen = document.getElementById('login-screen');
+        const adminPanel = document.getElementById('admin-panel');
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const togglePassword = document.getElementById('toggle-password');
+        const passwordInput = document.getElementById('password');
+        
+        // Toggle password visibility
+        togglePassword.addEventListener('click', () => {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                togglePassword.classList.remove('fa-eye');
+                togglePassword.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                togglePassword.classList.remove('fa-eye-slash');
+                togglePassword.classList.add('fa-eye');
+            }
+        });
+        
+        // Login functionality
+        loginBtn.addEventListener('click', () => {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const authCode = document.getElementById('auth-code').value;
+            
+            // Simple validation (in a real app, this would connect to a backend)
+            if(username === 'admin' && password === 'SecurePass123!' && authCode === '123456') {
+                loginScreen.style.display = 'none';
+                adminPanel.style.display = 'flex';
+                
+                // Initialize the dashboard
+                initDashboard();
+            } else {
+                alert('Invalid credentials or 2FA code. Please try again.');
+            }
+        });
+        
+        // Logout functionality
+        logoutBtn.addEventListener('click', () => {
+            adminPanel.style.display = 'none';
+            loginScreen.style.display = 'flex';
+            
+            // Clear inputs
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('auth-code').value = '';
+        });
+        
+        // Toggle sidebar on mobile
+        document.querySelector('.toggle-sidebar').addEventListener('click', function() {
+            document.querySelector('.admin-sidebar').classList.toggle('active');
+        });
+        
+        // Initialize the dashboard
+        function initDashboard() {
+            // Security Events Chart
+            const securityCtx = document.getElementById('securityChart').getContext('2d');
+            const securityChart = new Chart(securityCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['1 Jun', '5 Jun', '10 Jun', '15 Jun', '20 Jun', '25 Jun', '30 Jun'],
+                    datasets: [
+                        {
+                            label: 'Failed Logins',
+                            data: [2, 5, 3, 8, 4, 6, 3],
+                            backgroundColor: 'rgba(230, 57, 70, 0.7)',
+                            borderColor: 'rgba(230, 57, 70, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Security Alerts',
+                            data: [1, 3, 2, 5, 2, 4, 1],
+                            backgroundColor: 'rgba(248, 150, 30, 0.7)',
+                            borderColor: 'rgba(248, 150, 30, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Admin Actions',
+                            data: [12, 15, 18, 22, 20, 25, 30],
+                            backgroundColor: 'rgba(67, 97, 238, 0.7)',
+                            borderColor: 'rgba(67, 97, 238, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: '#c9d1d9'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(48, 54, 61, 0.5)'
+                            },
+                            ticks: {
+                                color: '#8b949e'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#8b949e'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Simulate security monitoring
+            setInterval(() => {
+                const securityStatus = document.querySelector('.security-status');
+                if (Math.random() > 0.8) {
+                    securityStatus.innerHTML = '<i class="fas fa-shield-alt"></i> Security: Threat Detected';
+                    securityStatus.classList.add('low');
+                } else {
+                    securityStatus.innerHTML = '<i class="fas fa-shield-alt"></i> Security: Active';
+                    securityStatus.classList.remove('low');
+                }
+            }, 10000);
+        }
+    </script>
+</body>
+</html>

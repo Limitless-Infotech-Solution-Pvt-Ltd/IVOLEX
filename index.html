@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IVOLEX - Premium Furniture & Interior Design</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
+    <style>
+        :root {
+            --primary: #8db7d0;
+            --secondary: #8380c4;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --ivolex-primary: #1e3a8a;
+            --ivolex-secondary: #87a5d4;
+            --ivolex-accent: #f59e0b;
+            --ivolex-light: #eff6ff;
+            --ivolex-dark: #0f172a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Geneva', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: rgb(107, 149, 194)92;
+            color: #1e293b;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            background-color: rgb(103, 102, 159);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 0 5%;
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 50px;
+            margin-right: 10px;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--ivolex-primary);
+        }
+
+        .logo span {
+            color: var(--ivolex-accent);
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-menu li {
+            margin: 0 15px;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--ivolex-dark);
+            font-weight: 500;
+            font-size: 1.1rem;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-menu a:hover {
+            color: var(--ivolex-primary);
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--ivolex-primary);
+            transition: width 0.3s;
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+            margin-right: 20px;
+        }
+
+        .search-box input {
+            padding: 10px 15px 10px 40px;
+            border-radius: 30px;
+            border: 1px solid #cbd5e1;
+            background: #f1f5f9;
+            width: 250px;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--ivolex-secondary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            width: 300px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .header-icon {
+            position: relative;
+            margin-left: 20px;
+            font-size: 1.3rem;
+            color: #334155;
+            cursor: pointer;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--ivolex-accent);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            margin-left: 25px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--ivolex-primary), var(--ivolex-secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--ivolex-primary), var(--ivolex-secondary));
+            color: white;
+            padding: 100px 5%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') no-repeat center center/cover;
+            opacity: 0.1;
+        }
+
+        .hero-content {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h2 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            font-weight: 800;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 15px 30px;
+            background: var(--ivolex-accent);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            background: #e69008;
+        }
+
+        /* Categories Section */
+        .section {
+            padding: 80px 5%;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--ivolex-primary);
+            margin-bottom: 15px;
+        }
+
+        .section-title p {
+            color: #64748b;
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-img {
+            height: 250px;
+            overflow: hidden;
+        }
+
+        .category-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .category-card:hover .category-img img {
+            transform: scale(1.05);
+        }
+
+        .category-info {
+            padding: 25px;
+            text-align: center;
+        }
+
+        .category-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--ivolex-dark);
+        }
+
+        .category-info p {
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        /* Products Section */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--ivolex-accent);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .product-img {
+            height: 250px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .product-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .product-card:hover .product-img img {
+            transform: scale(1.05);
+        }
+
+        .product-actions {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s;
+        }
+
+        .product-card:hover .product-actions {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            background: var(--ivolex-secondary);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-category {
+            color: var(--ivolex-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .product-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--ivolex-dark);
+        }
+
+        .product-price {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .current-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--ivolex-primary);
+        }
+
+        .old-price {
+            text-decoration: line-through;
+            color: #94a3b8;
+            margin-left: 10px;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            color: var(--ivolex-accent);
+            margin-bottom: 15px;
+        }
+
+        .rating-stars {
+            margin-right: 10px;
+        }
+
+        .rating-count {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        /* 3D Viewer */
+        .viewer-container {
+            height: 500px;
+            background: #0f172a;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 40px 0;
+            position: relative;
+        }
+
+        .viewer-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            z-index: 10;
+        }
+
+        .viewer-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .viewer-btn:hover {
+            background: var(--ivolex-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--ivolex-dark);
+            color: white;
+            padding: 80px 5% 40px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .footer-col h3 {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--ivolex-accent);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 15px;
+        }
+
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--ivolex-accent);
+        }
+
+        .footer-contact p {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #cbd5e1;
+        }
+
+        .footer-contact i {
+            margin-right: 10px;
+            color: var(--ivolex-accent);
+        }
+
+        .social-links {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            transition: all 0.3s;
+        }
+
+        .social-link:hover {
+            background: var(--ivolex-secondary);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .search-box input {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-wrap: wrap;
+                height: auto;
+                padding: 15px 0;
+            }
+            
+            .logo {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 15px;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .search-box {
+                flex-grow: 1;
+                margin-right: 10px;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
+            
+            .hero h2 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animated {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMxZTNhOGEiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTkgMjFINWEyIDIgMCAwIDEtMi0yVjVhMiAyIDAgMCAxIDItMmgxNGEyIDIgMCAwIDEgMiAydjE0YTIgMiAwIDAgMS0yIDJ6Ij48L3BhdGg+PHBhdGggZD0iTTkgMTBoNiI+PC9wYXRoPjxwYXRoIGQ9Ik0xMiA3djYiPjwvcGF0aD48L3N2Zz4=" alt="IVOLEX Logo">
+                <h1>IVO<span>LEX</span></h1>
+            </div>
+            
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#products">Products</a></li>
+                <li><a href="#categories">Categories</a></li>
+                <li><a href="#design">Design Services</a></li>
+                <li><a href="#about">About Us</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            
+            <div class="header-actions">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search products...">
+                </div>
+                
+                <div class="header-icon">
+                    <i class="far fa-heart"></i>
+                    <span class="notification-badge">3</span>
+                </div>
+                
+                <div class="header-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="notification-badge">5</span>
+                </div>
+                
+                <div class="user-profile">
+                    <div class="user-avatar">U</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h2>Transform Your Space with Premium Furniture</h2>
+            <p>Discover handcrafted furniture, luxury leather, and cutting-edge electronics for your dream home</p>
+            <a href="#products" class="cta-button">Explore Collection</a>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="section" id="categories">
+        <div class="section-title animated">
+            <h2>Shop by Category</h2>
+            <p>Explore our carefully curated collections for every room in your home</p>
+        </div>
+        
+        <div class="categories-grid">
+            <div class="category-card animated delay-1">
+                <div class="category-img">
+                    <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Living Room Furniture">
+                </div>
+                <div class="category-info">
+                    <h3>Living Room</h3>
+                    <p>Sofas, sectionals, coffee tables and more</p>
+                    <p>Sofas, sectionals, coffee tables and more</p>
+                    <p>Sofas, sectionals, coffee tables and more</p>
+                    <p>Sofas, sectionals, coffee tables and more</p>
+                    <a href="#" class="cta-button">Shop Now</a>
+                </div>
+            </div>
+            
+            <div class="category-card animated delay-2">
+                <div class="category-img">
+                    <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Bedroom Furniture">
+                </div>
+                <div class="category-info">
+                    <h3>Bedroom</h3>
+                    <p>Beds, dressers, nightstands and accessories</p>
+                    <a href="#" class="cta-button">Shop Now</a>
+                </div>
+            </div>
+            
+            <div class="category-card animated delay-3">
+                <div class="category-img">
+                    <img src="https://images.unsplash.com/photo-1600494603989-9650cf6ddd3d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80" alt="Home Office">
+                </div>
+                <div class="category-info">
+                    <h3>Home Office</h3>
+                    <p>Desks, chairs, storage solutions and tech</p>
+                    <a href="#" class="cta-button">Shop Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="section" id="products">
+        <div class="section-title animated">
+            <h2>Featured Products</h2>
+            <p>Discover our best-selling and newest additions</p>
+        </div>
+        
+        <div class="products-grid">
+            <div class="product-card animated delay-1">
+                <div class="product-badge">New</div>
+                <div class="product-img">
+                    <img src="https://images.unsplash.com/photo-1551298370-9d3d53740c72?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80" alt="Modern Sofa">
+                    <div class="product-actions">
+                        <div class="action-btn">
+                            <i class="far fa-heart"></i>
+                        </div>
+                        <div class="action-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="action-btn">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Living Room</div>
+                    <h3 class="product-title">Modern Leather Sofa</h3>
+                    <div class="product-price">
+                        <span class="current-price">$1,299</span>
+                        <span class="old-price">$1,599</span>
+                    </div>
+                    <div class="product-rating">
+                        <div class="rating-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <div class="rating-count">(128 reviews)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="product-card animated delay-2">
+                <div class="product-badge">Sale</div>
+                <div class="product-img">
+                    <img src="https://images.unsplash.com/photo-1503602642458-232111445657?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80" alt="Dining Table">
+                    <div class="product-actions">
+                        <div class="action-btn">
+                            <i class="far fa-heart"></i>
+                        </div>
+                        <div class="action-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="action-btn">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Dining</div>
+                    <h3 class="product-title">Oak Dining Table</h3>
+                    <div class="product-price">
+                        <span class="current-price">$899</span>
+                        <span class="old-price">$1,099</span>
+                    </div>
+                    <div class="product-rating">
+                        <div class="rating-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                        <div class="rating-count">(94 reviews)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="product-card animated delay-3">
+                <div class="product-img">
+                    <img src="https://images.unsplash.com/photo-1519947486511-46149fa0a254?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80" alt="Office Chair">
+                    <div class="product-actions">
+                        <div class="action-btn">
+                            <i class="far fa-heart"></i>
+                        </div>
+                        <div class="action-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="action-btn">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Office</div>
+                    <h3 class="product-title">Ergonomic Office Chair</h3>
+                    <div class="product-price">
+                        <span class="current-price">$499</span>
+                    </div>
+                    <div class="product-rating">
+                        <div class="rating-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="rating-count">(217 reviews)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="product-card animated">
+                <div class="product-badge">Popular</div>
+                <div class="product-img">
+                    <img src="https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1965&q=80" alt="Bed Frame">
+                    <div class="product-actions">
+                        <div class="action-btn">
+                            <i class="far fa-heart"></i>
+                        </div>
+                        <div class="action-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="action-btn">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Bedroom</div>
+                    <h3 class="product-title">King Size Bed Frame</h3>
+                    <div class="product-price">
+                        <span class="current-price">$1,599</span>
+                    </div>
+                    <div class="product-rating">
+                        <div class="rating-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <div class="rating-count">(156 reviews)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3D Product Viewer -->
+    <section class="section" id="design">
+        <div class="section-title animated">
+            <h2>Experience in 3D</h2>
+            <p>Rotate, zoom and explore our products in immersive 3D</p>
+        </div>
+        
+        <div class="viewer-container">
+            <div id="product-viewer"></div>
+            <div class="viewer-controls">
+                <div class="viewer-btn" id="rotate-btn">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+                <div class="viewer-btn" id="reset-btn">
+                    <i class="fas fa-expand"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>About IVOLEX</h3>
+                <p style="color: #cbd5e1; margin-bottom: 20px;">Premium furniture, electronics and interior design solutions for modern living.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-pinterest"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-col">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Products</a></li>
+                    <li><a href="#">Categories</a></li>
+                    <li><a href="#">Design Services</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h3>Categories</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Living Room</a></li>
+                    <li><a href="#">Bedroom</a></li>
+                    <li><a href="#">Dining</a></li>
+                    <li><a href="#">Home Office</a></li>
+                    <li><a href="#">Outdoor</a></li>
+                    <li><a href="#">Decor</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h3>Contact Us</h3>
+                <div class="footer-contact">
+                    <p><i class="fas fa-map-marker-alt"></i> 123 Design Street, Creative City</p>
+                    <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
+                    <p><i class="fas fa-envelope"></i> info@ivolex.com</p>
+                    <p><i class="fas fa-clock"></i> Mon-Fri: 9AM - 8PM, Sat-Sun: 10AM - 6PM</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2023 IVOLEX. All rights reserved. | Designed with <i class="fas fa-heart" style="color: var(--ivolex-accent);"></i></p>
+        </div>
+    </footer>
+
+    <!-- 3D Product Viewer Script -->
+    <script>
+        // Initialize Three.js scene
+        function init3DViewer() {
+            // Create scene
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0f172a);
+            
+            // Create camera
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+            
+            // Create renderer
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(document.getElementById('product-viewer').offsetWidth, 
+                            document.getElementById('product-viewer').offsetHeight);
+            document.getElementById('product-viewer').appendChild(renderer.domElement);
+            
+            // Add controls
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            // Add lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+            
+            // Create a sample product (sofa)
+            createSampleProduct(scene);
+            
+            // Animation loop
+            function animate() {
+                requestAnimationFrame(animate);
+                controls.update();
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                camera.aspect = document.getElementById('product-viewer').offsetWidth / 
+                                document.getElementById('product-viewer').offsetHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(document.getElementById('product-viewer').offsetWidth, 
+                                document.getElementById('product-viewer').offsetHeight);
+            });
+            
+            // Rotate button functionality
+            let rotating = false;
+            document.getElementById('rotate-btn').addEventListener('click', () => {
+                rotating = !rotating;
+            });
+            
+            // Reset button functionality
+            document.getElementById('reset-btn').addEventListener('click', () => {
+                controls.reset();
+            });
+        }
+        
+        // Create a sample product (sofa)
+        function createSampleProduct(scene) {
+            // Create sofa base
+            const sofaGeometry = new THREE.BoxGeometry(3, 0.5, 1.5);
+            const sofaMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x8B4513, // Brown leather color
+                roughness: 0.4,
+                metalness: 0.1
+            });
+            const sofa = new THREE.Mesh(sofaGeometry, sofaMaterial);
+            sofa.position.y = -1;
+            scene.add(sofa);
+            
+            // Create sofa back
+            const backGeometry = new THREE.BoxGeometry(3, 1.5, 0.3);
+            const back = new THREE.Mesh(backGeometry, sofaMaterial);
+            back.position.y = -0.25;
+            back.position.z = -0.75;
+            scene.add(back);
+            
+            // Create cushions
+            const cushionGeometry = new THREE.BoxGeometry(1.4, 0.3, 1.4);
+            const cushionMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x964B00, // Darker brown
+                roughness: 0.6
+            });
+            
+            for (let i = 0; i < 2; i++) {
+                const cushion = new THREE.Mesh(cushionGeometry, cushionMaterial);
+                cushion.position.x = i === 0 ? -0.75 : 0.75;
+                cushion.position.y = -0.6;
+                cushion.position.z = 0;
+                scene.add(cushion);
+            }
+            
+            // Create legs
+            const legGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.2, 16);
+            const legMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x333333, // Dark metal
+                metalness: 0.8,
+                roughness: 0.2
+            });
+            
+            const positions = [
+                { x: -1.4, z: -0.6 },
+                { x: 1.4, z: -0.6 },
+                { x: -1.4, z: 0.6 },
+                { x: 1.4, z: 0.6 }
+            ];
+            
+            positions.forEach(pos => {
+                const leg = new THREE.Mesh(legGeometry, legMaterial);
+                leg.position.x = pos.x;
+                leg.position.y = -1.1;
+                leg.position.z = pos.z;
+                leg.rotation.x = Math.PI / 2;
+                scene.add(leg);
+            });
+        }
+        
+        // Initialize the 3D viewer when page loads
+        window.addEventListener('load', init3DViewer);
+        
+        // Animation on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.section-title, .category-card, .product-card').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
