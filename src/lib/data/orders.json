@@ -1,0 +1,50 @@
+[
+  {
+    "id": "ORD-001",
+    "date": "2023-10-26",
+    "status": "Delivered",
+    "total": 1429.98,
+    "items": [
+      {
+        "productId": "1",
+        "name": "Modern Leather Sofa",
+        "quantity": 1,
+        "price": 1299.99
+      },
+      {
+        "productId": "3",
+        "name": "Wireless Charging Pad",
+        "quantity": 1,
+        "price": 79.50
+      }
+    ]
+  },
+  {
+    "id": "ORD-002",
+    "date": "2023-10-20",
+    "status": "Shipped",
+    "total": 499.00,
+    "items": [
+      {
+        "productId": "2",
+        "name": "Ergonomic Office Chair",
+        "quantity": 1,
+        "price": 499.00
+      }
+    ]
+  },
+  {
+    "id": "ORD-003",
+    "date": "2023-09-15",
+    "status": "Delivered",
+    "total": 120.00,
+    "items": [
+      {
+        "productId": "4",
+        "name": "Handcrafted Leather Wallet",
+        "quantity": 1,
+        "price": 120.00
+      }
+    ]
+  }
+]
