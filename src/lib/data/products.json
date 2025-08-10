@@ -1,0 +1,62 @@
+[
+  {
+    "id": "1",
+    "name": "Modern Leather Sofa",
+    "price": 1299.99,
+    "description": "A beautiful and comfortable modern leather sofa, perfect for any living room.",
+    "images": [
+      "https://images.unsplash.com/photo-1540574163024-588462b3b7c8?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    ],
+    "category": "Furniture",
+    "stock": 15,
+    "rating": 4.5
+  },
+  {
+    "id": "2",
+    "name": "Ergonomic Office Chair",
+    "price": 499.00,
+    "description": "An ergonomic office chair that provides comfort and support for long hours of work.",
+    "images": [
+      "https://images.unsplash.com/photo-1580480055273-228ff5388ef8?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    ],
+    "category": "Furniture",
+    "stock": 30,
+    "rating": 4.8
+  },
+  {
+    "id": "3",
+    "name": "Wireless Charging Pad",
+    "price": 79.50,
+    "description": "A sleek and fast wireless charging pad for all your compatible devices.",
+    "images": [
+      "https://images.unsplash.com/photo-1545239351-ef35f43d514b?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    ],
+    "category": "EV Electronics",
+    "stock": 100,
+    "rating": 4.2
+  },
+  {
+    "id": "4",
+    "name": "Handcrafted Leather Wallet",
+    "price": 120.00,
+    "description": "A premium wallet made from the finest handcrafted leather.",
+    "images": [
+      "https://images.unsplash.com/photo-1619118399583-160d8f070924?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    ],
+    "category": "Leather",
+    "stock": 50,
+    "rating": 4.9
+  },
+  {
+    "id": "5",
+    "name": "Smart Home Hub",
+    "price": 199.99,
+    "description": "The central hub for your smart home, connecting all your devices.",
+    "images": [
+      "https://images.unsplash.com/photo-1565932887474-b43c69d35161?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    ],
+    "category": "EV Electronics",
+    "stock": 25,
+    "rating": 4.6
+  }
+]
