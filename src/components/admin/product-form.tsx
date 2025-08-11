@@ -12,6 +12,7 @@ import { Product, Category } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Loader2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -124,7 +125,10 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
           />
         </div>
       </div>
-      <Button type="submit" disabled={isLoading}>{action}</Button>
+      <Button type="submit" disabled={isLoading}>
+        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        {action}
+      </Button>
     </form>
   );
 }

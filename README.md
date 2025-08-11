@@ -70,7 +70,13 @@ Run the following command to apply the database schema. This will create all the
 npx prisma migrate dev --name init
 ```
 
-_Note: You may also want to seed your database with some initial data. A seeding script can be created and run with `npx prisma db seed`._
+You can also seed the database with initial data (categories, products, and an admin user) by running:
+```bash
+npx prisma db seed
+```
+The default admin user credentials are:
+- **Email**: `admin@example.com`
+- **Password**: `password123`
 
 ### 4. Running the Application
 

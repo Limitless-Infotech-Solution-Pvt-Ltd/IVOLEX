@@ -61,14 +61,22 @@ export default function AdminProductsPage() {
   }, [fetchProducts]);
 
   const handleDelete = async (productId: string) => {
-    try {
-      await axios.delete(`/api/products/${productId}`);
-      // Refetch products to update the list
-      fetchProducts();
-      toast.success("Product deleted successfully.");
-    } catch (error) {
-      toast.error("Failed to delete product.");
-    }
+    const originalProducts = [...products];
+    // Optimistically update the UI
+    setProducts(originalProducts.filter(p => p.id !== productId));
+
+    toast.promise(
+      axios.delete(`/api/products/${productId}`),
+      {
+        loading: 'Deleting product...',
+        success: 'Product deleted successfully.',
+        error: (err) => {
+          // Revert the UI on failure
+          setProducts(originalProducts);
+          return err.response?.data?.message || 'Failed to delete product.';
+        },
+      }
+    );
   };
 
   const columns: ColumnDef<Product>[] = [

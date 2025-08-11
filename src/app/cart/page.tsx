@@ -6,9 +6,13 @@ import { Button } from "@/components/ui/button";
 import { CartItem } from "@/components/cart/cart-item";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ShoppingCart } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function CartPage() {
   const { items, totalItems, totalPrice, clearCart } = useCartStore();
+  const router = useRouter();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -16,12 +20,15 @@ export default function CartPage() {
       <main className="flex-grow container py-12">
         <h1 className="text-4xl font-extrabold tracking-tight mb-8">Shopping Cart</h1>
         {items.length === 0 ? (
-          <div className="text-center py-16">
-            <p className="text-xl text-muted-foreground mb-4">Your cart is empty.</p>
-            <Button asChild>
-              <Link href="/">Continue Shopping</Link>
-            </Button>
-          </div>
+          <EmptyState
+            icon={<ShoppingCart className="h-16 w-16" />}
+            title="Your cart is empty"
+            description="Looks like you haven't added anything to your cart yet. Let's find something you'll love."
+            action={{
+              label: "Continue Shopping",
+              onClick: () => router.push("/"),
+            }}
+          />
         ) : (
           <div className="grid lg:grid-cols-3 gap-12">
             <div className="lg:col-span-2">

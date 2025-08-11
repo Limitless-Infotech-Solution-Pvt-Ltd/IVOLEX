@@ -23,6 +23,8 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { EmptyState } from "./empty-state";
+import { Database } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -100,7 +102,11 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                  <EmptyState
+                    icon={<Database className="h-16 w-16" />}
+                    title="No results found"
+                    description="There are no records matching your query."
+                  />
                 </TableCell>
               </TableRow>
             )}

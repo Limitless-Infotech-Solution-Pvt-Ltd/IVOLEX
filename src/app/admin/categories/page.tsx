@@ -58,13 +58,20 @@ export default function AdminCategoriesPage() {
   }, [fetchCategories]);
 
   const handleDelete = async (categoryId: string) => {
-    try {
-      await axios.delete(`/api/categories/${categoryId}`);
-      fetchCategories();
-      toast.success("Category deleted successfully.");
-    } catch (error) {
-      toast.error("Failed to delete category.");
-    }
+    const originalCategories = [...categories];
+    setCategories(originalCategories.filter(c => c.id !== categoryId));
+
+    toast.promise(
+      axios.delete(`/api/categories/${categoryId}`),
+      {
+        loading: 'Deleting category...',
+        success: 'Category deleted successfully.',
+        error: (err) => {
+          setCategories(originalCategories);
+          return err.response?.data?.message || 'Failed to delete category.';
+        },
+      }
+    );
   };
 
   const columns: ColumnDef<Category>[] = [
