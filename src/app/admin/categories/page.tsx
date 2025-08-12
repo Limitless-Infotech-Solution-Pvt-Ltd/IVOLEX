@@ -3,10 +3,11 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { PlusCircle, MoreHorizontal } from "lucide-react";
-import axios from "axios";
+import useSWR from 'swr';
 import { toast } from "sonner";
 import { ColumnDef } from "@tanstack/react-table";
 
+import { fetcher } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -42,37 +43,23 @@ function ActionsCell({ category, onDelete }: { category: Category, onDelete: (id
 }
 
 export default function AdminCategoriesPage() {
-  const [categories, setCategories] = React.useState<Category[]>([]);
-
-  const fetchCategories = React.useCallback(async () => {
-    try {
-      const response = await axios.get("/api/categories");
-      setCategories(response.data);
-    } catch (error) {
-      toast.error("Failed to fetch categories.");
-    }
-  }, []);
-
-  React.useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
+  const { data: categories, error, mutate } = useSWR<Category[]>('/api/categories', fetcher);
 
   const handleDelete = async (categoryId: string) => {
-    const originalCategories = [...categories];
-    setCategories(originalCategories.filter(c => c.id !== categoryId));
+    const originalCategories = categories ? [...categories] : [];
+    mutate(originalCategories.filter(c => c.id !== categoryId), false);
 
-    toast.promise(
-      axios.delete(`/api/categories/${categoryId}`),
-      {
-        loading: 'Deleting category...',
-        success: 'Category deleted successfully.',
-        error: (err) => {
-          setCategories(originalCategories);
-          return err.response?.data?.message || 'Failed to delete category.';
-        },
-      }
-    );
+    try {
+      await axios.delete(`/api/categories/${categoryId}`);
+      toast.success("Category deleted successfully.");
+    } catch (error) {
+      mutate(originalCategories, false);
+      toast.error("Failed to delete category.");
+    }
   };
+
+  if (error) return <div>Failed to load categories</div>;
+  if (!categories) return <div>Loading...</div>;
 
   const columns: ColumnDef<Category>[] = [
     {

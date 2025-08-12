@@ -7,6 +7,24 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ProductGrid } from "@/components/product-grid";
 import { ProductGridSkeleton } from "@/components/product-grid-skeleton";
+import type { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const category = await getCategoryBySlug(params.slug);
+  if (!category) {
+    return {
+      title: "Category Not Found",
+    }
+  }
+
+  return {
+    title: `${category.name} | IVOLEX`,
+    description: category.description,
+    openGraph: {
+      images: category.image ? [category.image] : [],
+    },
+  }
+}
 
 export default async function CategoryPage({ params }: { params: { slug: string } }) {
   const category = await getCategoryBySlug(params.slug);

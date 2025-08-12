@@ -5,9 +5,11 @@ import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PlusCircle, MoreHorizontal } from "lucide-react";
-import axios from "axios";
+import useSWR from 'swr';
 import { toast } from "sonner";
+import axios from "axios";
 
+import { fetcher } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -19,7 +21,16 @@ import {
 import { DataTable } from "@/components/ui/data-table";
 import { Product } from "@prisma/client";
 
-// Define a separate component for the actions to avoid the window hack
+type PaginatedProductsResponse = {
+  data: Product[];
+  pageInfo: {
+    totalCount: number;
+    page: number;
+    pageSize: number;
+    totalPages: number;
+  };
+};
+
 function ActionsCell({ product, onDelete }: { product: Product, onDelete: (id: string) => void }) {
   const router = useRouter();
   return (
@@ -43,40 +54,28 @@ function ActionsCell({ product, onDelete }: { product: Product, onDelete: (id: s
   );
 }
 
-
 export default function AdminProductsPage() {
-  const [products, setProducts] = React.useState<Product[]>([]);
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0, // SWR is 0-indexed, but our API is 1-indexed
+    pageSize: 10,
+  });
 
-  const fetchProducts = React.useCallback(async () => {
-    try {
-      const response = await axios.get("/api/products");
-      setProducts(response.data);
-    } catch (error) {
-      toast.error("Failed to fetch products.");
-    }
-  }, []);
+  const { data, error, mutate } = useSWR<PaginatedProductsResponse>(
+    `/api/products?page=${pagination.pageIndex + 1}&pageSize=${pagination.pageSize}`,
+    fetcher
+  );
 
-  React.useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+  const products = data?.data || [];
+  const pageCount = data?.pageInfo.totalPages || 0;
 
   const handleDelete = async (productId: string) => {
-    const originalProducts = [...products];
-    // Optimistically update the UI
-    setProducts(originalProducts.filter(p => p.id !== productId));
-
-    toast.promise(
-      axios.delete(`/api/products/${productId}`),
-      {
-        loading: 'Deleting product...',
-        success: 'Product deleted successfully.',
-        error: (err) => {
-          // Revert the UI on failure
-          setProducts(originalProducts);
-          return err.response?.data?.message || 'Failed to delete product.';
-        },
-      }
-    );
+    try {
+      await axios.delete(`/api/products/${productId}`);
+      mutate(); // Revalidate the data
+      toast.success("Product deleted successfully.");
+    } catch (error) {
+      toast.error("Failed to delete product.");
+    }
   };
 
   const columns: ColumnDef<Product>[] = [
@@ -105,6 +104,9 @@ export default function AdminProductsPage() {
     },
   ];
 
+  if (error) return <div>Failed to load products</div>;
+  if (!data) return <div>Loading...</div>;
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -116,7 +118,14 @@ export default function AdminProductsPage() {
           </Link>
         </Button>
       </div>
-      <DataTable columns={columns} data={products} filterColumn="name" />
+      <DataTable
+        columns={columns}
+        data={products}
+        pageCount={pageCount}
+        onPaginationChange={setPagination}
+        pagination={pagination}
+        filterColumn="name"
+      />
     </div>
   );
 }

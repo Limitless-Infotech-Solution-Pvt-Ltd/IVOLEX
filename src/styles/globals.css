@@ -4,77 +4,79 @@
 
 @layer base {
   :root {
+    /* Light Theme - A variation of the premium theme */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 210 10% 10%; /* Deep Charcoal */
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 210 10% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 210 10% 10%;
 
-    --primary: 222 65% 33%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 225 75% 55%; /* Royal Blue */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 215 46% 68%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 210 10% 95%;
+    --secondary-foreground: 210 10% 10%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 210 10% 95%;
+    --muted-foreground: 210 10% 40%;
 
-    --accent: 38 95% 50%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 45 85% 55%; /* Metallic Gold */
+    --accent-foreground: 210 10% 10%;
 
-    --destructive: 332 92% 53%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --success: 195 86% 62%;
-    --success-foreground: 222.2 47.4% 11.2%;
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
 
-    --warning: 33 94% 54%;
-    --warning-foreground: 222.2 47.4% 11.2%;
+    --warning: 45 85% 55%;
+    --warning-foreground: 210 10% 10%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 210 10% 90%;
+    --input: 210 10% 90%;
+    --ring: 225 75% 55%;
 
     --radius: 1rem;
   }
 
   .dark {
-    --background: 221 48% 6%; /* #0d1117 */
-    --foreground: 215 25% 85%; /* #c9d1d9 */
+    /* Dark Theme - The new premium theme */
+    --background: 210 10% 10%; /* Deep Charcoal */
+    --foreground: 210 10% 85%;
 
-    --card: 221 48% 9%; /* #161b22 */
-    --card-foreground: 215 25% 85%;
+    --card: 210 10% 15%;
+    --card-foreground: 210 10% 85%;
 
-    --popover: 221 48% 9%;
-    --popover-foreground: 215 25% 85%;
+    --popover: 210 10% 10%;
+    --popover-foreground: 210 10% 85%;
 
-    --primary: 217 91% 60%; /* A brighter blue for dark mode */
-    --primary-foreground: 221 48% 9%;
+    --primary: 225 75% 55%; /* Royal Blue */
+    --primary-foreground: 210 10% 95%;
 
-    --secondary: 221 48% 15%;
-    --secondary-foreground: 215 25% 85%;
+    --secondary: 210 10% 20%;
+    --secondary-foreground: 210 10% 85%;
 
-    --muted: 221 48% 15%;
-    --muted-foreground: 215 20% 55%; /* #8b949e */
+    --muted: 210 10% 20%;
+    --muted-foreground: 210 10% 55%;
 
-    --accent: 195 86% 62%; /* success color from original design */
-    --accent-foreground: 221 48% 9%;
+    --accent: 45 85% 55%; /* Metallic Gold */
+    --accent-foreground: 210 10% 10%;
 
-    --destructive: 355 75% 58%; /* #e63946 */
-    --destructive-foreground: 215 25% 85%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 10% 95%;
 
-    --success: 173 58% 40%; /* #2a9d8f */
-    --success-foreground: 215 25% 85%;
+    --success: 142 71% 45%;
+    --success-foreground: 210 10% 95%;
 
-    --warning: 33 94% 54%; /* #f8961e */
-    --warning-foreground: 221 48% 9%;
+    --warning: 45 85% 55%;
+    --warning-foreground: 210 10% 10%;
 
-    --border: 221 48% 15%; /* #30363d */
-    --input: 221 48% 15%;
-    --ring: 217 91% 60%;
+    --border: 210 10% 20%;
+    --input: 210 10% 20%;
+    --ring: 225 75% 55%;
   }
 }
 

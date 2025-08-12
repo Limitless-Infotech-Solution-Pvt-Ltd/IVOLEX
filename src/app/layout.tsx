@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { ProductQuickView } from "@/components/product/product-quick-view";
 import NextAuthSessionProvider from "@/components/session-provider";
+import ErrorBoundary from "@/components/ui/error-boundary";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -32,7 +33,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <ErrorBoundary>
+              {children}
+            </ErrorBoundary>
             <Toaster />
             <ProductQuickView />
           </ThemeProvider>

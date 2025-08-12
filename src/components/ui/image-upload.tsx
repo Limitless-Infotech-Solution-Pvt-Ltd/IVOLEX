@@ -5,7 +5,9 @@ import axios from "axios";
 import { toast } from "sonner";
 import { ImagePlus, Trash } from "lucide-react";
 import Image from "next/image";
+import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface ImageUploadProps {
   disabled?: boolean;
@@ -22,8 +24,8 @@ export function ImageUpload({
 }: ImageUploadProps) {
   const [isUploading, setIsUploading] = React.useState(false);
 
-  const onUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const onDrop = React.useCallback(async (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
     if (!file) return;
 
     try {
@@ -42,7 +44,13 @@ export function ImageUpload({
     } finally {
       setIsUploading(false);
     }
-  };
+  }, [onChange]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { 'image/*': [] },
+    disabled: disabled || isUploading,
+  });
 
   return (
     <div>
@@ -58,22 +66,18 @@ export function ImageUpload({
           </div>
         ))}
       </div>
-      <div>
-        <input
-          type="file"
-          id="image-upload"
-          className="hidden"
-          onChange={onUpload}
-          disabled={disabled || isUploading}
-        />
-        <label htmlFor="image-upload">
-          <div className="w-48 h-48 rounded-md border-2 border-dashed border-muted-foreground/50 flex flex-col items-center justify-center cursor-pointer hover:border-primary">
-            <ImagePlus className="h-10 w-10 text-muted-foreground" />
-            <span className="mt-2 text-sm text-muted-foreground">
-              {isUploading ? "Uploading..." : "Upload an Image"}
-            </span>
-          </div>
-        </label>
+      <div
+        {...getRootProps()}
+        className={cn(
+          "w-48 h-48 rounded-md border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-colors",
+          isDragActive ? "border-primary bg-primary/10" : "border-muted-foreground/50 hover:border-primary"
+        )}
+      >
+        <input {...getInputProps()} />
+        <ImagePlus className="h-10 w-10 text-muted-foreground" />
+        <span className="mt-2 text-sm text-muted-foreground text-center px-2">
+          {isUploading ? "Uploading..." : isDragActive ? "Drop to upload" : "Drag & drop or click"}
+        </span>
       </div>
     </div>
   );

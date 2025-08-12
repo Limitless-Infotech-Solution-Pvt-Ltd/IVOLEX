@@ -5,12 +5,12 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
   useReactTable,
   SortingState,
   ColumnFiltersState,
+  getSortedRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
 } from "@tanstack/react-table";
 
 import {
@@ -29,12 +29,18 @@ import { Database } from "lucide-react";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  pageCount: number;
+  onPaginationChange: (pagination: { pageIndex: number; pageSize: number }) => void;
+  pagination: { pageIndex: number; pageSize: number };
   filterColumn: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  pageCount,
+  onPaginationChange,
+  pagination,
   filterColumn,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -43,8 +49,10 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
+    pageCount,
+    onPaginationChange: onPaginationChange,
+    manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
@@ -52,6 +60,7 @@ export function DataTable<TData, TValue>({
     state: {
       sorting,
       columnFilters,
+      pagination,
     },
   });
 

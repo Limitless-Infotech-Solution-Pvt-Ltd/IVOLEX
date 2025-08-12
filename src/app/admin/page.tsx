@@ -44,10 +44,10 @@ export default async function AdminDashboardPage() {
     <div>
       <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard title="Total Sales" value={`$${sales.toFixed(2)}`} icon={DollarSign} color="border-sky-500" />
-        <StatCard title="Total Orders" value={orderCount.toString()} icon={CreditCard} color="border-emerald-500" />
-        <StatCard title="Total Products" value={productCount.toString()} icon={Package} color="border-amber-500" />
-        <StatCard title="Total Customers" value={userCount.toString()} icon={Users} color="border-rose-500" />
+        <StatCard title="Total Sales" value={`$${sales.toFixed(2)}`} icon={DollarSign} color="border-primary" />
+        <StatCard title="Total Orders" value={orderCount.toString()} icon={CreditCard} color="border-accent" />
+        <StatCard title="Total Products" value={productCount.toString()} icon={Package} color="border-success" />
+        <StatCard title="Total Customers" value={userCount.toString()} icon={Users} color="border-destructive" />
       </div>
       <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-card p-6 rounded-lg shadow-soft">

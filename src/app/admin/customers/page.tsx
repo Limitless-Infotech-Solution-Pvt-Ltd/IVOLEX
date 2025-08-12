@@ -1,10 +1,11 @@
 "use client";
 
 import * as React from "react";
-import axios from "axios";
+import useSWR from 'swr';
 import { toast } from "sonner";
 import { format } from "date-fns";
 
+import { fetcher } from "@/lib/api";
 import {
   Table,
   TableBody,
@@ -16,19 +17,10 @@ import {
 import { User } from "@prisma/client";
 
 export default function AdminCustomersPage() {
-  const [customers, setCustomers] = React.useState<User[]>([]);
+  const { data: customers, error } = useSWR<User[]>('/api/users', fetcher);
 
-  React.useEffect(() => {
-    const fetchCustomers = async () => {
-      try {
-        const response = await axios.get("/api/users");
-        setCustomers(response.data);
-      } catch (error) {
-        toast.error("Failed to fetch customers.");
-      }
-    };
-    fetchCustomers();
-  }, []);
+  if (error) return <div>Failed to load customers</div>;
+  if (!customers) return <div>Loading...</div>;
 
   return (
     <div>

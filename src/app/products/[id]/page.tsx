@@ -10,13 +10,48 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProductCard } from "@/components/product-card";
 import { ProductViewer } from "@/components/product/product-viewer";
+import type { Metadata } from 'next'
 
-export default async function ProductPage({ params }: { params: { id: string } }) {
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const product = await getProductById(params.id);
-
   if (!product) {
+    return {
+      title: "Product Not Found",
+    }
+  }
+
+  return {
+    title: `${product.name} | IVOLEX`,
+    description: product.description,
+    openGraph: {
+      images: product.images ? [product.images[0]] : [],
+    },
+  }
+}
+
+export default async function ProductPage({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  const productData = await getProductById(params.id);
+
+  if (!productData) {
     notFound();
   }
+
+  // Handle preview data
+  const isPreview = searchParams?.preview === 'true';
+  const product = isPreview ? {
+    ...productData,
+    name: typeof searchParams?.name === 'string' ? searchParams.name : productData.name,
+    description: typeof searchParams?.description === 'string' ? searchParams.description : productData.description,
+    price: typeof searchParams?.price === 'string' ? parseFloat(searchParams.price) : productData.price,
+    images: typeof searchParams?.image === 'string' ? [searchParams.image, ...productData.images] : productData.images,
+  } : productData;
+
 
   const relatedProducts = (await getProducts()).filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
 
@@ -24,6 +59,12 @@ export default async function ProductPage({ params }: { params: { id: string } }
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-grow container py-12">
+        {isPreview && (
+          <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-8" role="alert">
+            <p className="font-bold">Preview Mode</p>
+            <p>You are viewing a preview. Changes are not saved.</p>
+          </div>
+        )}
         <div className="grid md:grid-cols-2 gap-12">
           <ProductGallery images={product.images || []} />
           <div className="md:sticky top-24 h-fit">

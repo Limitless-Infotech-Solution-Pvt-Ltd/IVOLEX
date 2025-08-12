@@ -3,9 +3,10 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { MoreHorizontal } from "lucide-react";
-import axios from "axios";
+import useSWR from 'swr';
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { fetcher } from "@/lib/api";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
@@ -94,19 +95,10 @@ const columns: ColumnDef<OrderWithUser>[] = [
 ];
 
 export default function AdminOrdersPage() {
-  const [orders, setOrders] = React.useState<OrderWithUser[]>([]);
+  const { data: orders, error } = useSWR<OrderWithUser[]>('/api/orders', fetcher);
 
-  React.useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const response = await axios.get("/api/orders");
-        setOrders(response.data);
-      } catch (error) {
-        toast.error("Failed to fetch orders.");
-      }
-    };
-    fetchOrders();
-  }, []);
+  if (error) return <div>Failed to load orders</div>;
+  if (!orders) return <div>Loading...</div>;
 
   return (
     <div>

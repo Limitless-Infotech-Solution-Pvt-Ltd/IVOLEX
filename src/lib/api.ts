@@ -1,9 +1,12 @@
 import { Product, Category, Order } from './definitions';
+import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+export const fetcher = (url: string) => axios.get(url).then(res => res.data);
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
 
 export async function getProducts(): Promise<Product[]> {
-  const res = await fetch(`${API_URL}/products`);
+  const res = await fetch(`${API_BASE_URL}/api/products`);
   if (!res.ok) {
     throw new Error('Failed to fetch products');
   }
@@ -11,9 +14,8 @@ export async function getProducts(): Promise<Product[]> {
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
-  const res = await fetch(`${API_URL}/products/${id}`);
+  const res = await fetch(`${API_BASE_URL}/api/products/${id}`);
   if (!res.ok) {
-    // Return null or handle as you see fit when a product isn't found
     if (res.status === 404) return null;
     throw new Error('Failed to fetch product');
   }
@@ -21,7 +23,7 @@ export async function getProductById(id: string): Promise<Product | null> {
 }
 
 export async function getCategories(): Promise<Category[]> {
-  const res = await fetch(`${API_URL}/categories`);
+  const res = await fetch(`${API_BASE_URL}/api/categories`);
   if (!res.ok) {
     throw new Error('Failed to fetch categories');
   }
@@ -29,7 +31,7 @@ export async function getCategories(): Promise<Category[]> {
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
-  const res = await fetch(`${API_URL}/categories/slug/${slug}`);
+  const res = await fetch(`${API_BASE_URL}/api/categories/slug/${slug}`);
   if (!res.ok) {
     if (res.status === 404) return null;
     throw new Error('Failed to fetch category');
@@ -38,8 +40,9 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
 }
 
 export async function getOrders(): Promise<Order[]> {
-    const mockOrders: Order[] = [
-      { id: 'ORD-001', date: '2023-10-26', status: 'Delivered', total: 1429.98, items: [] },
-    ];
-    return Promise.resolve(mockOrders);
+    const res = await fetch(`${API_BASE_URL}/api/orders`);
+    if (!res.ok) {
+        throw new Error('Failed to fetch orders');
+    }
+    return res.json();
 }

@@ -79,6 +79,19 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
     }
   };
 
+  const handlePreview = () => {
+    const data = form.getValues();
+    const params = new URLSearchParams();
+    params.set('preview', 'true');
+    params.set('name', data.name);
+    params.set('description', data.description || '');
+    params.set('price', String(data.price));
+    if (data.images && data.images.length > 0) {
+      params.set('image', data.images[0]);
+    }
+    window.open(`/products/${initialData?.id}?${params.toString()}`, '_blank');
+  };
+
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -125,10 +138,17 @@ export function ProductForm({ initialData, categories }: ProductFormProps) {
           />
         </div>
       </div>
-      <Button type="submit" disabled={isLoading}>
-        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {action}
-      </Button>
+      <div className="flex items-center gap-4">
+        <Button type="submit" disabled={isLoading}>
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {action}
+        </Button>
+        {initialData && (
+          <Button type="button" variant="outline" onClick={handlePreview}>
+            Preview
+          </Button>
+        )}
+      </div>
     </form>
   );
 }

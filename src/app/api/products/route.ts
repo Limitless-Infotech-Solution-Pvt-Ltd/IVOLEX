@@ -1,22 +1,42 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
 
-export async function GET() {
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const page = parseInt(searchParams.get('page') || '1', 10);
+  const pageSize = parseInt(searchParams.get('pageSize') || '10', 10);
+
   try {
-    const products = await prisma.product.findMany({
-      include: {
-        category: true,
-      },
+    const [products, totalCount] = await prisma.$transaction([
+      prisma.product.findMany({
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        include: {
+          category: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      }),
+      prisma.product.count(),
+    ]);
+
+    return NextResponse.json({
+      data: products,
+      pageInfo: {
+        totalCount,
+        page,
+        pageSize,
+        totalPages: Math.ceil(totalCount / pageSize),
+      }
     });
-    return NextResponse.json(products);
   } catch (error) {
     console.error('[PRODUCTS_GET]', error);
     return new NextResponse('Internal error', { status: 500 });
   }
 }
-
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
 
 export async function POST(req: Request) {
   try {
